@@ -26,18 +26,24 @@ else
 fi
 
 
-# Generate GitHub SSH Key
-printf "\n\n\n### Generating or Re-using GitHub SSH Key ###"
-
-FILE=~/.ssh/id_ed25519
-if [ -f "$FILE" ]; then
-    printf "\n%s already exists.\n\n" $FILE
+if [[ -z "${GITHUB_TOKEN}" ]]; then
+    printf "Enter GitHub Personal Access Token: "
+    read READ_GITHUB_TOKEN
+    export GITHUB_TOKEN="$READ_GITHUB_TOKEN"
 else
-    ssh-keygen -t ed25519 -C "$GITHUB_EMAIL"
+    printf "\nGitHub Personal Access Token: Using Environment Variable GITHUB_TOKEN value %s" "$GITHUB_TOKEN"
 fi
 
-printf "\nEnter the following SSH Key into GitHub:\n"
-cat ~/.ssh/id_ed25519.pub
 
-eval $(ssh-agent -s)
-ssh-add ~/.ssh/id_ed25519
+# Applying GitHub Configuration
+printf "\n\n\n### Apply GitHub Configuration ###"
+
+git config --global user.name "$GITHUB_NAME"
+git config --global user.email "$GITHUB_EMAIL"
+git config -l
+
+git config --system credential.helper
+git config --system --unset credential.helper
+git fetch upstream
+
+
