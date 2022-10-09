@@ -38,3 +38,6 @@ fi
 
 printf "\nEnter the following SSH Key into GitHub:\n"
 cat ~/.ssh/id_ed25519.pub
+
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_ed25519
